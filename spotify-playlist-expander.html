@@ -17,106 +17,77 @@
   }
   body { font-family: var(--mono); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2.5rem 1rem 5rem; }
   .app { width: 100%; max-width: 580px; }
-
   header { margin-bottom: 2.5rem; }
   .header-top { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
   .logo { width: 38px; height: 38px; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .logo svg { width: 21px; height: 21px; fill: #000; }
-  h1 { font-family: var(--serif); font-size: 26px; font-weight: 400; font-style: italic; letter-spacing: -0.01em; }
+  h1 { font-family: var(--serif); font-size: 26px; font-weight: 400; font-style: italic; }
   .tagline { font-size: 11px; color: var(--text-muted); padding-left: 52px; }
-
   .steps { display: flex; gap: 3px; margin-bottom: 2rem; }
   .step-dot { flex: 1; height: 2px; background: var(--surface3); border-radius: 99px; transition: background 0.4s; }
   .step-dot.done { background: var(--green); }
   .step-dot.active { background: var(--green); opacity: 0.4; }
-
   .section { display: none; animation: fadeIn 0.3s ease; }
   .section.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
   .field-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 5px; display: block; }
-  input[type="text"], input[type="url"], input[type="password"] {
-    width: 100%; background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); color: var(--text); font-family: var(--mono);
-    font-size: 12px; padding: 10px 12px; outline: none; transition: border-color 0.15s; margin-bottom: 14px;
-  }
+  input[type="text"], input[type="url"] { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: var(--mono); font-size: 12px; padding: 10px 12px; outline: none; transition: border-color 0.15s; margin-bottom: 14px; }
   input:focus { border-color: var(--border-hover); }
   input::placeholder { color: var(--text-hint); }
-
   .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: transparent; color: var(--text); font-family: var(--mono); font-size: 12px; cursor: pointer; transition: all 0.15s; }
   .btn:hover { border-color: var(--border-hover); background: var(--surface2); }
   .btn:active { transform: scale(0.98); }
   .btn-green { background: var(--green); border-color: var(--green); color: #000; font-size: 13px; }
   .btn-green:hover { background: #23e863; border-color: #23e863; }
   .btn-sm { padding: 5px 11px; font-size: 11px; }
-
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
   .pl-header { display: flex; align-items: center; gap: 14px; }
   .pl-img { width: 58px; height: 58px; border-radius: 6px; object-fit: cover; background: var(--surface2); flex-shrink: 0; }
   .pl-name { font-family: var(--serif); font-size: 18px; font-style: italic; }
   .pl-owner { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
-
   .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
   .metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
   .metric-val { font-size: 20px; font-family: var(--serif); font-style: italic; }
   .metric-label { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 3px; }
-
   .mode-row { display: flex; gap: 6px; margin-bottom: 14px; }
   .mode-btn { flex: 1; padding: 9px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-muted); font-size: 11px; font-family: var(--mono); cursor: pointer; text-align: center; transition: all 0.15s; }
   .mode-btn.selected { border-color: var(--green); color: var(--green); background: rgba(29,185,84,0.06); }
-
   input[type="range"] { -webkit-appearance: none; width: 100%; height: 3px; background: var(--surface3); border-radius: 99px; outline: none; }
   input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; background: var(--green); border-radius: 50%; cursor: pointer; border: 2px solid var(--bg); }
   .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
   .slider-val { font-size: 13px; min-width: 36px; text-align: right; color: var(--green); }
-
   .track-row { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 12px; margin-bottom: 5px; transition: border-color 0.15s; }
   .track-row:hover { border-color: var(--border-hover); }
   .track-thumb { width: 36px; height: 36px; border-radius: 4px; object-fit: cover; background: var(--surface2); flex-shrink: 0; }
   .track-info { flex: 1; min-width: 0; }
-  .track-name { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--mono); }
+  .track-name { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .track-artist { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
   .track-dur { font-size: 10px; color: var(--text-hint); flex-shrink: 0; }
   .track-actions { display: flex; gap: 5px; flex-shrink: 0; margin-left: 4px; }
   .icon-btn { width: 27px; height: 27px; border-radius: 50%; border: 1px solid var(--border); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 11px; transition: all 0.15s; color: var(--text-muted); }
   .icon-btn.keep:hover { border-color: var(--green); color: var(--green); background: rgba(29,185,84,0.1); }
   .icon-btn.remove:hover { border-color: var(--red); color: var(--red); background: rgba(224,82,82,0.1); }
-
   .review-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
   .badge { font-size: 10px; padding: 2px 8px; border-radius: 99px; font-weight: 500; }
   .badge-green { background: rgba(29,185,84,0.13); color: var(--green); }
   .badge-red { background: rgba(224,82,82,0.1); color: var(--red); }
-
   .seeds { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; min-height: 22px; }
   .seed-tag { font-size: 10px; padding: 2px 8px; border-radius: 99px; border: 1px solid rgba(29,185,84,0.25); color: rgba(29,185,84,0.75); background: rgba(29,185,84,0.04); }
-
   .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
-
   .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-row { display: flex; align-items: center; gap: 10px; padding: 20px 0; color: var(--text-muted); font-size: 12px; }
-  .loading-msg { transition: opacity 0.3s; }
-
   .hint-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 11px; color: var(--text-muted); line-height: 1.7; margin-bottom: 14px; }
   .hint-box code { color: var(--text); background: var(--surface2); padding: 1px 5px; border-radius: 3px; font-size: 10px; }
   .hint-box a { color: var(--green); text-decoration: none; }
   .hint-box a:hover { text-decoration: underline; }
-
   h2 { font-family: var(--serif); font-size: 20px; font-style: italic; font-weight: 400; margin-bottom: 5px; }
   .sub { font-size: 11px; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.6; }
-
   .export-scroll { max-height: 300px; overflow-y: auto; }
   .export-scroll::-webkit-scrollbar { width: 3px; }
   .export-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
-
   #save-status { font-size: 11px; margin-top: 10px; display: none; color: var(--green); }
-
-  .ai-thinking { background: var(--surface); border: 1px solid rgba(29,185,84,0.2); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 12px; font-size: 11px; color: var(--text-muted); line-height: 1.7; display: none; }
-  .ai-thinking.visible { display: block; }
-  .ai-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--green); margin-bottom: 6px; }
-
-  .not-found { opacity: 0.45; }
-  .not-found .track-name::after { content: ' — not found on Spotify'; font-size: 10px; color: var(--amber); }
+  .not-found-label { font-size: 9px; color: var(--amber); margin-left: 6px; }
 </style>
 </head>
 <body>
@@ -128,7 +99,7 @@
       </div>
       <h1>Playlist Expander</h1>
     </div>
-    <div class="tagline">powered by Claude · finds music you'll actually like</div>
+    <div class="tagline">powered by Last.fm · finds music you'll actually like</div>
   </header>
 
   <div class="steps">
@@ -140,24 +111,16 @@
 
   <!-- SETUP -->
   <div class="section active" id="sec-setup">
-    <h2>Connect your accounts</h2>
-    <p class="sub">We need Spotify to read your playlist, and Claude to find similar music.</p>
-
+    <h2>Connect your Spotify</h2>
+    <p class="sub">We use Spotify to read your playlist and save the result. Last.fm handles the music similarity.</p>
     <div class="hint-box">
       <strong style="color:var(--text);">Spotify client ID</strong> — <a href="https://developer.spotify.com/dashboard" target="_blank">developer.spotify.com/dashboard</a><br>
-      Set redirect URI to: <code id="redirect-hint"></code> · select <strong>Web API</strong><br><br>
-      <strong style="color:var(--text);">Anthropic API key</strong> — <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
+      Set redirect URI to: <code id="redirect-hint"></code> · select <strong>Web API</strong>
     </div>
-
     <span class="field-label">Spotify Client ID</span>
     <input type="text" id="client-id" placeholder="4b3c2d1e5f6a..." />
-
-    <span class="field-label">Anthropic API Key</span>
-    <input type="password" id="anthropic-key" placeholder="sk-ant-..." />
-
     <span class="field-label">Playlist URL</span>
     <input type="url" id="playlist-url" placeholder="https://open.spotify.com/playlist/..." />
-
     <button class="btn btn-green" onclick="startAuth()">Connect to Spotify →</button>
   </div>
 
@@ -174,9 +137,8 @@
       </div>
     </div>
     <div class="metrics" id="pl-metrics"></div>
-
     <h2>Target size</h2>
-    <p class="sub">Claude will suggest tracks based on the style and artists in your playlist.</p>
+    <p class="sub">Last.fm will find tracks similar to the ones in your playlist.</p>
     <div class="mode-row">
       <div class="mode-btn selected" id="mode-tracks" onclick="setMode('tracks')">by track count</div>
       <div class="mode-btn" id="mode-hours" onclick="setMode('hours')">by duration</div>
@@ -195,19 +157,13 @@
         <span class="slider-val" id="hour-count-out">2.0h</span>
       </div>
     </div>
-    <button class="btn btn-green" onclick="generateSuggestions()" style="margin-top:4px;">Ask Claude for suggestions →</button>
+    <button class="btn btn-green" onclick="generateSuggestions()" style="margin-top:4px;">Find similar tracks →</button>
   </div>
 
   <!-- REVIEW -->
   <div class="section" id="sec-review">
     <h2>Review suggestions</h2>
     <p class="sub">Keep tracks you like — they guide the next batch. Remove ones that don't fit.</p>
-
-    <div class="ai-thinking" id="ai-thinking">
-      <div class="ai-label">Claude's reasoning</div>
-      <div id="ai-reasoning-text"></div>
-    </div>
-
     <div class="review-bar">
       <span style="font-size:10px;color:var(--text-muted);">kept</span>
       <span class="badge badge-green" id="kept-count">0</span>
@@ -241,20 +197,21 @@
 </div>
 
 <script>
+const LASTFM_KEY = '9e0eaed6fd5a7bcd203ccda8a42783c3';
 const REDIRECT_URI = window.location.href.split('?')[0].split('#')[0];
 document.getElementById('redirect-hint').textContent = REDIRECT_URI;
 
 let accessToken = null, playlistData = null;
-let suggestions = [], keptTracks = [], removedTitles = new Set(), allKeptTitles = new Set();
+let suggestions = [], keptTracks = [], removedKeys = new Set(), allSeenKeys = new Set();
 let targetMode = 'tracks';
-let anthropicKey = '';
+let seedCursor = 0;
 
 // --- PKCE ---
 function b64url(buf) { return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
 async function codeChallenge(v) { return b64url(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))); }
-function verifier(n=64) { const a=new Uint8Array(n); crypto.getRandomValues(a); return b64url(a).slice(0,n); }
+function makeVerifier(n=64) { const a=new Uint8Array(n); crypto.getRandomValues(a); return b64url(a).slice(0,n); }
 
-// --- UI helpers ---
+// --- UI ---
 function setStep(n) { for(let i=1;i<=4;i++) document.getElementById('s'+i).className='step-dot'+(i<n?' done':i===n?' active':''); }
 function showSection(id) { document.querySelectorAll('.section').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 function setMode(m) {
@@ -267,18 +224,18 @@ function setMode(m) {
 function extractPlaylistId(s) { const m=s.match(/playlist[\/:]([A-Za-z0-9]+)/); return m?m[1]:s.trim(); }
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmtDur(ms) { const s=Math.floor(ms/1000),m=Math.floor(s/60); return m+':'+String(s%60).padStart(2,'0'); }
+function trackKey(title, artist) { return (title+'|||'+artist).toLowerCase(); }
+function shuffle(arr) { for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
 
 // --- Auth ---
 async function startAuth() {
   const clientId=document.getElementById('client-id').value.trim();
   const playlistUrl=document.getElementById('playlist-url').value.trim();
-  anthropicKey=document.getElementById('anthropic-key').value.trim();
   if(!clientId) return alert('Please enter your Spotify client ID.');
-  if(!anthropicKey) return alert('Please enter your Anthropic API key.');
   if(!playlistUrl) return alert('Please enter a playlist URL.');
-  const v=verifier();
+  const v=makeVerifier();
   sessionStorage.setItem('pkce_v', v);
-  sessionStorage.setItem('spe', JSON.stringify({clientId, playlistUrl, anthropicKey}));
+  sessionStorage.setItem('spe', JSON.stringify({clientId, playlistUrl}));
   const p=new URLSearchParams({client_id:clientId, response_type:'code', redirect_uri:REDIRECT_URI, scope:'playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private', code_challenge_method:'S256', code_challenge:await codeChallenge(v), show_dialog:'true'});
   window.location.href='https://accounts.spotify.com/authorize?'+p;
 }
@@ -302,8 +259,6 @@ async function loadPlaylist() {
   const state=JSON.parse(stored);
   document.getElementById('client-id').value=state.clientId||'';
   document.getElementById('playlist-url').value=state.playlistUrl||'';
-  document.getElementById('anthropic-key').value=state.anthropicKey||'';
-  anthropicKey=state.anthropicKey||'';
   const plId=extractPlaylistId(state.playlistUrl||''); if(!plId) return;
   showSection('sec-target'); setStep(2);
   document.getElementById('pl-name').textContent='Loading...';
@@ -311,8 +266,8 @@ async function loadPlaylist() {
     playlistData=await sf('https://api.spotify.com/v1/playlists/'+plId+'?fields=name,owner.display_name,images,tracks.total');
     let tracks=[], next='https://api.spotify.com/v1/playlists/'+plId+'/tracks?limit=100&fields=next,items(track(id,name,artists,album.images,duration_ms))';
     while(next){const page=await sf(next);tracks=tracks.concat(page.items.filter(i=>i.track&&i.track.id).map(i=>i.track));next=page.next;}
-    playlistData.allTracks=tracks;
-    tracks.forEach(t=>allKeptTitles.add(t.name.toLowerCase()+'|||'+t.artists[0]?.name.toLowerCase()));
+    playlistData.allTracks=shuffle(tracks);
+    tracks.forEach(t=>allSeenKeys.add(trackKey(t.name, t.artists[0]?.name||'')));
     document.getElementById('pl-img').src=playlistData.images?.[0]?.url||'';
     document.getElementById('pl-name').textContent=playlistData.name;
     document.getElementById('pl-owner').textContent='by '+playlistData.owner.display_name;
@@ -327,122 +282,99 @@ async function loadPlaylist() {
   } catch(e) { alert('Error loading playlist: '+e.message); showSection('sec-setup'); setStep(1); }
 }
 
-// --- Ask Claude for suggestions ---
-async function askClaude(trackList, keptList, removedList, targetCount) {
-  const playlistSummary = trackList.slice(0,40).map(t=>`${t.name} — ${t.artists[0]?.name}`).join('\n');
-  const keptSummary = keptList.length ? keptList.slice(-15).map(t=>`${t.name} — ${t.artists[0]?.name}`).join('\n') : null;
-  const removedSummary = removedList.size ? [...removedList].slice(-10).join('\n') : null;
-
-  const prompt = `You are a music curator helping expand a Spotify playlist.
-
-Here are some tracks from the existing playlist:
-${playlistSummary}
-${keptSummary ? `\nThe user has already approved these suggestions (use these as strong signals for style):\n${keptSummary}` : ''}
-${removedSummary ? `\nThe user rejected these (avoid similar ones):\n${removedSummary}` : ''}
-
-Task: Suggest exactly ${targetCount} new tracks that would fit well in this playlist. Consider the genres, era, mood, tempo, and artists represented.
-
-Rules:
-- Do NOT suggest tracks already in the playlist above
-- Vary the artists (don't repeat the same artist more than twice)
-- Be specific — real track titles and real artist names only
-- Lean into what makes this playlist cohesive
-
-Respond ONLY with a JSON object in this exact format (no markdown, no explanation before or after):
-{
-  "reasoning": "2-3 sentence explanation of the musical style you identified and your approach",
-  "tracks": [
-    {"title": "Song Title", "artist": "Artist Name"},
-    ...
-  ]
-}`;
-
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': anthropicKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1500, messages: [{ role: 'user', content: prompt }] })
-  });
-  if(!response.ok) throw new Error(await response.text());
-  const data = await response.json();
-  const text = data.content[0].text.trim();
-  // Strip markdown fences if present
-  const clean = text.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
-  return JSON.parse(clean);
+// --- Last.fm similar tracks ---
+async function getLastFmSimilar(track, artist, limit=10) {
+  const url=`https://ws.audioscrobbler.com/2.0/?method=track.getSimilar&track=${encodeURIComponent(track)}&artist=${encodeURIComponent(artist)}&limit=${limit}&autocorrect=1&api_key=${LASTFM_KEY}&format=json`;
+  try {
+    const r=await fetch(url);
+    const d=await r.json();
+    return d.similartracks?.track||[];
+  } catch(e) { return []; }
 }
 
 // --- Search Spotify for a track ---
-async function searchTrack(title, artist) {
-  const q = encodeURIComponent(`track:${title} artist:${artist}`);
+async function searchSpotify(title, artist) {
   try {
-    const r = await sf(`https://api.spotify.com/v1/search?q=${q}&type=track&limit=1`);
-    if (r.tracks?.items?.length) return r.tracks.items[0];
-  } catch(e) {}
-  // fallback: less strict search
+    const q=encodeURIComponent(`track:${title} artist:${artist}`);
+    const r=await sf(`https://api.spotify.com/v1/search?q=${q}&type=track&limit=1`);
+    if(r.tracks?.items?.length) return r.tracks.items[0];
+  } catch(e){}
   try {
-    const q2 = encodeURIComponent(`${title} ${artist}`);
-    const r2 = await sf(`https://api.spotify.com/v1/search?q=${q2}&type=track&limit=1`);
-    if (r2.tracks?.items?.length) return r2.tracks.items[0];
-  } catch(e) {}
+    const q=encodeURIComponent(`${title} ${artist}`);
+    const r=await sf(`https://api.spotify.com/v1/search?q=${q}&type=track&limit=1`);
+    if(r.tracks?.items?.length) return r.tracks.items[0];
+  } catch(e){}
   return null;
 }
 
-async function generateSuggestions() { setStep(3); showSection('sec-review'); await fetchMoreSuggestions(); }
+async function generateSuggestions() { setStep(3); showSection('sec-review'); seedCursor=0; await fetchMoreSuggestions(); }
 
 async function fetchMoreSuggestions() {
-  document.getElementById('suggestion-list').innerHTML='<div class="loading-row"><span class="spinner"></span><span class="loading-msg">Asking Claude to analyse your playlist...</span></div>';
-  document.getElementById('ai-thinking').classList.remove('visible');
+  const msgEl = document.getElementById('suggestion-list');
+  msgEl.innerHTML='<div class="loading-row"><span class="spinner"></span> querying Last.fm for similar tracks...</div>';
 
   let targetCount = parseInt(document.getElementById('track-count').value);
-  if (targetMode==='hours') {
+  if(targetMode==='hours') {
     const hrs=parseFloat(document.getElementById('hour-count').value);
     const avgDurMs=playlistData.allTracks.reduce((a,t)=>a+(t.duration_ms||200000),0)/playlistData.allTracks.length;
     targetCount=Math.ceil((hrs*3600000)/avgDurMs);
   }
-  targetCount = Math.min(targetCount, 50);
+  targetCount=Math.min(targetCount, 50);
 
   try {
-    // Step 1: Ask Claude
-    const msgEl = document.querySelector('.loading-msg');
-    if(msgEl) msgEl.textContent = 'Claude is thinking...';
-    const result = await askClaude(playlistData.allTracks, keptTracks, removedTitles, targetCount);
+    // Pick seed tracks — prefer kept tracks, fall back to playlist rotation
+    const seedTracks = keptTracks.length > 0
+      ? keptTracks.slice(-5)
+      : playlistData.allTracks.slice(seedCursor, seedCursor+5);
+    seedCursor = (seedCursor + 5) % playlistData.allTracks.length;
 
-    // Show reasoning
-    if(result.reasoning) {
-      document.getElementById('ai-reasoning-text').textContent = result.reasoning;
-      document.getElementById('ai-thinking').classList.add('visible');
+    // Query Last.fm for each seed
+    const similarPool = new Map(); // key -> {title, artist, match}
+    const perSeed = Math.ceil(targetCount / seedTracks.length) + 5;
+
+    for(const seed of seedTracks) {
+      const artist = seed.artists?.[0]?.name || seed.artist || '';
+      const similar = await getLastFmSimilar(seed.name, artist, perSeed);
+      for(const s of similar) {
+        const k=trackKey(s.name, s.artist.name);
+        if(!allSeenKeys.has(k) && !removedKeys.has(k) && !similarPool.has(k)) {
+          similarPool.set(k, {title: s.name, artist: s.artist.name, match: parseFloat(s.match||0)});
+        }
+      }
     }
 
-    // Step 2: Search Spotify for each track
-    if(msgEl) msgEl.textContent = `Finding ${result.tracks.length} tracks on Spotify...`;
-    const resolved = [];
-    for(const t of result.tracks) {
-      const key = t.title.toLowerCase()+'|||'+t.artist.toLowerCase();
-      if(allKeptTitles.has(key) || removedTitles.has(key)) continue;
-      const spotifyTrack = await searchTrack(t.title, t.artist);
-      resolved.push({ suggested: t, spotifyTrack });
+    // Sort by match score, take top N
+    const sorted=[...similarPool.values()].sort((a,b)=>b.match-a.match).slice(0, targetCount);
+
+    // Look up each on Spotify
+    msgEl.innerHTML='<div class="loading-row"><span class="spinner"></span> finding tracks on Spotify...</div>';
+    const resolved=[];
+    for(const s of sorted) {
+      const spotifyTrack=await searchSpotify(s.title, s.artist);
+      resolved.push({lastfm: s, spotifyTrack});
     }
-    suggestions = resolved;
+    suggestions=resolved;
     renderSuggestions();
   } catch(e) {
-    document.getElementById('suggestion-list').innerHTML='<p style="color:var(--red);font-size:12px;">Error: '+esc(e.message)+'</p>';
+    msgEl.innerHTML='<p style="color:var(--red);font-size:12px;">Error: '+esc(e.message)+'</p>';
   }
 }
 
 function renderSuggestions() {
   const list=document.getElementById('suggestion-list');
-  if(!suggestions.length){list.innerHTML='<p style="color:var(--text-muted);font-size:12px;padding:12px 0;">No suggestions returned. Try "more suggestions".</p>';return;}
+  if(!suggestions.length){list.innerHTML='<p style="color:var(--text-muted);font-size:12px;padding:12px 0;">No suggestions found. Try "more suggestions".</p>';return;}
   list.innerHTML=suggestions.map((s,i)=>{
     const t=s.spotifyTrack;
-    const id=t?t.id:('nospot_'+i);
+    const rowId='row_'+i;
     const img=t?.album?.images?.[2]?.url||'';
-    const name=t?t.name:s.suggested.title;
-    const artist=t?t.artists.map(a=>a.name).join(', '):s.suggested.artist;
+    const name=t?t.name:s.lastfm.title;
+    const artist=t?t.artists.map(a=>a.name).join(', '):s.lastfm.artist;
     const dur=t?fmtDur(t.duration_ms||0):'';
-    const notFound=!t?' not-found':'';
-    return `<div class="track-row${notFound}" id="tr-${id}">
+    const notFound=!t?'<span class="not-found-label">not on Spotify</span>':'';
+    return `<div class="track-row" id="${rowId}">
       <img class="track-thumb" src="${esc(img)}" alt=""/>
       <div class="track-info">
-        <div class="track-name">${esc(name)}</div>
+        <div class="track-name">${esc(name)}${notFound}</div>
         <div class="track-artist">${esc(artist)}</div>
       </div>
       <span class="track-dur">${dur}</span>
@@ -458,24 +390,24 @@ function renderSuggestions() {
 function keepTrack(idx) {
   const s=suggestions[idx]; if(!s||!s.spotifyTrack) return;
   keptTracks.push(s.spotifyTrack);
-  allKeptTitles.add(s.suggested.title.toLowerCase()+'|||'+s.suggested.artist.toLowerCase());
-  document.getElementById('tr-'+(s.spotifyTrack.id))?.remove();
-  suggestions[idx]=null;
-  suggestions=suggestions.filter(Boolean);
+  allSeenKeys.add(trackKey(s.lastfm.title, s.lastfm.artist));
+  document.getElementById('row_'+idx)?.remove();
+  suggestions[idx]=null; suggestions=suggestions.filter(Boolean);
+  // re-index
+  renderSuggestions();
   updateCounts(); updateKeptSeeds();
 }
 function removeTrack(idx) {
   const s=suggestions[idx]; if(!s) return;
-  removedTitles.add(s.suggested.title+' — '+s.suggested.artist);
-  const id=s.spotifyTrack?s.spotifyTrack.id:('nospot_'+idx);
-  document.getElementById('tr-'+id)?.remove();
-  suggestions[idx]=null;
-  suggestions=suggestions.filter(Boolean);
+  removedKeys.add(trackKey(s.lastfm.title, s.lastfm.artist));
+  document.getElementById('row_'+idx)?.remove();
+  suggestions[idx]=null; suggestions=suggestions.filter(Boolean);
+  renderSuggestions();
   updateCounts();
 }
 function updateCounts() {
   document.getElementById('kept-count').textContent=keptTracks.length;
-  document.getElementById('removed-count').textContent=removedTitles.size;
+  document.getElementById('removed-count').textContent=removedKeys.size;
 }
 function updateKeptSeeds() {
   const el=document.getElementById('kept-seeds'); if(!keptTracks.length){el.innerHTML='';return;}
@@ -506,7 +438,7 @@ async function saveToSpotify() {
   st.style.display='block'; st.style.color='var(--green)'; st.textContent='Saving...';
   try {
     const me=await sf('https://api.spotify.com/v1/me');
-    const pl=await sf('https://api.spotify.com/v1/users/'+me.id+'/playlists',{method:'POST',body:JSON.stringify({name,public:false,description:'Created with Spotify Playlist Expander + Claude'})});
+    const pl=await sf('https://api.spotify.com/v1/users/'+me.id+'/playlists',{method:'POST',body:JSON.stringify({name,public:false,description:'Created with Spotify Playlist Expander + Last.fm'})});
     const uris=keptTracks.map(t=>'spotify:track:'+t.id);
     for(let i=0;i<uris.length;i+=100) await sf('https://api.spotify.com/v1/playlists/'+pl.id+'/tracks',{method:'POST',body:JSON.stringify({uris:uris.slice(i,i+100)})});
     st.textContent='✓ Saved "'+name+'" to your Spotify library.';
