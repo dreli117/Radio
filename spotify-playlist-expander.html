@@ -219,9 +219,9 @@ function parseCSV(text) {
   if (!lines.length) return [];
   // Find header row
   const header = lines[0].split(',').map(h => h.replace(/^"|"$/g,'').trim().toLowerCase());
-  const nameIdx = header.findIndex(h => h.includes('track name') || h === 'name' || h.includes('track'));
-  const artistIdx = header.findIndex(h => h.includes('artist name') || h === 'artist');
-  const durIdx = header.findIndex(h => h.includes('duration') || h.includes('ms'));
+  const nameIdx = header.findIndex(h => h === 'track name' || h.includes('track name'));
+  const artistIdx = header.findIndex(h => h === 'artist name(s)' || h.includes('artist name') || h === 'artist');
+  const durIdx = header.findIndex(h => h === 'duration (ms)' || h.includes('duration'));
   if (nameIdx === -1 || artistIdx === -1) return null;
 
   const tracks = [];
@@ -229,7 +229,7 @@ function parseCSV(text) {
     const row = parseCSVRow(lines[i]);
     if (!row || row.length <= Math.max(nameIdx, artistIdx)) continue;
     const name = row[nameIdx]?.replace(/^"|"$/g,'').trim();
-    const artist = row[artistIdx]?.replace(/^"|"$/g,'').trim();
+    const artist = (row[artistIdx]?.replace(/^"|"$/g,'').trim()||'').split(',')[0].trim();
     const durMs = durIdx >= 0 ? parseInt(row[durIdx]) || 0 : 0;
     if (name && artist) tracks.push({name, artist, durationMs: durMs});
   }
