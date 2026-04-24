@@ -41,10 +41,7 @@
   .btn-green:hover { background: #23e863; border-color: #23e863; }
   .btn-sm { padding: 5px 11px; font-size: 11px; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 14px; }
-  .pl-header { display: flex; align-items: center; gap: 14px; }
-  .pl-img { width: 58px; height: 58px; border-radius: 6px; object-fit: cover; background: var(--surface2); flex-shrink: 0; }
   .pl-name { font-family: var(--serif); font-size: 18px; font-style: italic; }
-  .pl-owner { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
   .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
   .metric { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
   .metric-val { font-size: 20px; font-family: var(--serif); font-style: italic; }
@@ -78,7 +75,6 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-row { display: flex; align-items: center; gap: 10px; padding: 20px 0; color: var(--text-muted); font-size: 12px; }
   .hint-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 11px; color: var(--text-muted); line-height: 1.7; margin-bottom: 14px; }
-  .hint-box code { color: var(--text); background: var(--surface2); padding: 1px 5px; border-radius: 3px; font-size: 10px; }
   .hint-box a { color: var(--green); text-decoration: none; }
   .hint-box a:hover { text-decoration: underline; }
   h2 { font-family: var(--serif); font-size: 20px; font-style: italic; font-weight: 400; margin-bottom: 5px; }
@@ -88,6 +84,10 @@
   .export-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
   #save-status { font-size: 11px; margin-top: 10px; display: none; color: var(--green); }
   .not-found-label { font-size: 9px; color: var(--amber); margin-left: 6px; }
+  .drop-zone { border: 1px dashed var(--border-hover); border-radius: var(--radius); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.15s; margin-bottom: 14px; color: var(--text-muted); font-size: 12px; }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--green); color: var(--green); background: rgba(29,185,84,0.04); }
+  .drop-zone input { display: none; }
+  .drop-icon { font-size: 28px; margin-bottom: 8px; }
 </style>
 </head>
 <body>
@@ -99,7 +99,7 @@
       </div>
       <h1>Playlist Expander</h1>
     </div>
-    <div class="tagline">powered by Last.fm · finds music you'll actually like</div>
+    <div class="tagline">Last.fm similarity · saves to Spotify</div>
   </header>
 
   <div class="steps">
@@ -109,32 +109,35 @@
     <div class="step-dot" id="s4"></div>
   </div>
 
-  <!-- SETUP -->
+  <!-- SETUP: CSV upload -->
   <div class="section active" id="sec-setup">
-    <h2>Connect your Spotify</h2>
-    <p class="sub">We use Spotify to read your playlist and save the result. Last.fm handles the music similarity.</p>
-    <div class="hint-box">
-      <strong style="color:var(--text);">Spotify client ID</strong> — <a href="https://developer.spotify.com/dashboard" target="_blank">developer.spotify.com/dashboard</a><br>
-      Set redirect URI to: <code id="redirect-hint"></code> · select <strong>Web API</strong>
+    <h2>Load your playlist</h2>
+    <p class="sub">Export your playlist from <a href="https://exportify.net" target="_blank" style="color:var(--green);">exportify.net</a>, then drop the CSV file here.</p>
+
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('csv-input').click()">
+      <input type="file" id="csv-input" accept=".csv" onchange="handleFile(this.files[0])">
+      <div class="drop-icon">🎵</div>
+      <div>Drop your Exportify CSV here</div>
+      <div style="font-size:10px;margin-top:4px;color:var(--text-hint);">or click to browse</div>
     </div>
-    <span class="field-label">Spotify Client ID</span>
-    <input type="text" id="client-id" placeholder="4b3c2d1e5f6a..." />
-    <span class="field-label">Playlist URL</span>
-    <input type="url" id="playlist-url" placeholder="https://open.spotify.com/playlist/..." />
-    <button class="btn btn-green" onclick="startAuth()">Connect to Spotify →</button>
+
+    <div class="divider"></div>
+    <p class="sub" style="margin-bottom:8px;">To save the final playlist back to Spotify, enter your Spotify client ID.</p>
+    <div class="hint-box">
+      <a href="https://developer.spotify.com/dashboard" target="_blank">developer.spotify.com/dashboard</a> → your app → Settings<br>
+      Redirect URI: <code id="redirect-hint" style="color:var(--text);background:var(--surface2);padding:1px 5px;border-radius:3px;font-size:10px;"></code> · select <strong>Web API</strong>
+    </div>
+    <span class="field-label">Spotify Client ID (needed only for saving)</span>
+    <input type="text" id="client-id" placeholder="4b3c2d1e5f6a... (optional for now)" />
+    <button class="btn btn-green" id="connect-btn" onclick="connectSpotify()" style="display:none;">Connect Spotify to save →</button>
+    <button class="btn btn-green" id="skip-btn" onclick="proceedWithoutSpotify()" style="display:none;">Continue without saving →</button>
   </div>
 
   <!-- TARGET -->
   <div class="section" id="sec-target">
     <div class="card">
-      <div class="pl-header">
-        <img class="pl-img" id="pl-img" src="" alt="" />
-        <div>
-          <div class="pl-name" id="pl-name">Loading...</div>
-          <div class="pl-owner" id="pl-owner"></div>
-          <div style="margin-top:6px;"><span class="badge badge-green" id="pl-count"></span></div>
-        </div>
-      </div>
+      <div class="pl-name" id="pl-name"></div>
+      <div style="margin-top:6px;"><span class="badge badge-green" id="pl-count"></span></div>
     </div>
     <div class="metrics" id="pl-metrics"></div>
     <h2>Target size</h2>
@@ -163,7 +166,7 @@
   <!-- REVIEW -->
   <div class="section" id="sec-review">
     <h2>Review suggestions</h2>
-    <p class="sub">Keep tracks you like — they guide the next batch. Remove ones that don't fit.</p>
+    <p class="sub">Keep tracks you like — they seed the next batch. Remove ones that don't fit.</p>
     <div class="review-bar">
       <span style="font-size:10px;color:var(--text-muted);">kept</span>
       <span class="badge badge-green" id="kept-count">0</span>
@@ -181,7 +184,7 @@
   <!-- EXPORT -->
   <div class="section" id="sec-export">
     <h2>Your new playlist</h2>
-    <p class="sub">All tracks you kept. Save them directly to Spotify.</p>
+    <p class="sub" id="export-sub">All tracks you kept.</p>
     <div class="metrics">
       <div class="metric"><div class="metric-val" id="exp-count">0</div><div class="metric-label">tracks</div></div>
       <div class="metric"><div class="metric-val" id="exp-dur">—</div><div class="metric-label">duration</div></div>
@@ -189,9 +192,11 @@
     </div>
     <div class="export-scroll" id="export-list"></div>
     <div class="divider"></div>
-    <span class="field-label">Playlist name</span>
-    <input type="text" id="new-pl-name" placeholder="My expanded playlist" />
-    <button class="btn btn-green" onclick="saveToSpotify()">Save to Spotify</button>
+    <div id="save-section">
+      <span class="field-label">Playlist name</span>
+      <input type="text" id="new-pl-name" placeholder="My expanded playlist" />
+      <button class="btn btn-green" onclick="saveToSpotify()">Save to Spotify</button>
+    </div>
     <div id="save-status"></div>
   </div>
 </div>
@@ -201,17 +206,107 @@ const LASTFM_KEY = '9e0eaed6fd5a7bcd203ccda8a42783c3';
 const REDIRECT_URI = window.location.href.split('?')[0].split('#')[0];
 document.getElementById('redirect-hint').textContent = REDIRECT_URI;
 
-let accessToken = null, playlistData = null;
+let accessToken = null;
+let playlistTracks = []; // {name, artist, durationMs}
+let playlistName = 'My Playlist';
 let suggestions = [], keptTracks = [], removedKeys = new Set(), allSeenKeys = new Set();
-let targetMode = 'tracks';
-let seedCursor = 0;
+let targetMode = 'tracks', seedCursor = 0;
+let hasSpotifyAuth = false;
 
-// --- PKCE ---
+// --- CSV parsing ---
+function parseCSV(text) {
+  const lines = text.split('\n');
+  if (!lines.length) return [];
+  // Find header row
+  const header = lines[0].split(',').map(h => h.replace(/^"|"$/g,'').trim().toLowerCase());
+  const nameIdx = header.findIndex(h => h.includes('track name') || h === 'name' || h.includes('track'));
+  const artistIdx = header.findIndex(h => h.includes('artist name') || h === 'artist');
+  const durIdx = header.findIndex(h => h.includes('duration') || h.includes('ms'));
+  if (nameIdx === -1 || artistIdx === -1) return null;
+
+  const tracks = [];
+  for (let i = 1; i < lines.length; i++) {
+    const row = parseCSVRow(lines[i]);
+    if (!row || row.length <= Math.max(nameIdx, artistIdx)) continue;
+    const name = row[nameIdx]?.replace(/^"|"$/g,'').trim();
+    const artist = row[artistIdx]?.replace(/^"|"$/g,'').trim();
+    const durMs = durIdx >= 0 ? parseInt(row[durIdx]) || 0 : 0;
+    if (name && artist) tracks.push({name, artist, durationMs: durMs});
+  }
+  return tracks;
+}
+
+function parseCSVRow(line) {
+  const result = [], re = /("(?:[^"]|"")*"|[^,]*)/g;
+  let m;
+  while ((m = re.exec(line)) !== null) {
+    if (m.index === re.lastIndex) re.lastIndex++;
+    result.push(m[1]);
+  }
+  return result;
+}
+
+function handleFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const tracks = parseCSV(e.target.result);
+    if (!tracks || tracks.length === 0) return alert('Could not parse CSV. Make sure it\'s an Exportify export.');
+    playlistTracks = shuffle([...tracks]);
+    playlistName = file.name.replace('.csv','');
+    tracks.forEach(t => allSeenKeys.add(trackKey(t.name, t.artist)));
+    // Show buttons
+    document.getElementById('connect-btn').style.display = 'inline-flex';
+    document.getElementById('skip-btn').style.display = 'inline-flex';
+    document.getElementById('drop-zone').style.borderColor = 'var(--green)';
+    document.getElementById('drop-zone').querySelector('div:nth-child(2)').textContent = `✓ ${tracks.length} tracks loaded from ${file.name}`;
+    document.getElementById('drop-zone').style.color = 'var(--green)';
+  };
+  reader.readAsText(file);
+}
+
+// Drag and drop
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-over'); handleFile(e.dataTransfer.files[0]); });
+
+function proceedWithoutSpotify() {
+  if (!playlistTracks.length) return alert('Please load a CSV file first.');
+  hasSpotifyAuth = false;
+  showPlaylist();
+}
+
+// --- Spotify Auth (optional, for saving) ---
 function b64url(buf) { return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
 async function codeChallenge(v) { return b64url(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v))); }
 function makeVerifier(n=64) { const a=new Uint8Array(n); crypto.getRandomValues(a); return b64url(a).slice(0,n); }
 
-// --- UI ---
+async function connectSpotify() {
+  if (!playlistTracks.length) return alert('Please load a CSV file first.');
+  const clientId = document.getElementById('client-id').value.trim();
+  if (!clientId) return alert('Please enter your Spotify client ID.');
+  const v = makeVerifier();
+  sessionStorage.setItem('pkce_v', v);
+  sessionStorage.setItem('spe', JSON.stringify({clientId, playlistName, tracks: playlistTracks}));
+  const p = new URLSearchParams({client_id:clientId, response_type:'code', redirect_uri:REDIRECT_URI, scope:'playlist-modify-public playlist-modify-private', code_challenge_method:'S256', code_challenge:await codeChallenge(v), show_dialog:'true'});
+  window.location.href = 'https://accounts.spotify.com/authorize?'+p;
+}
+
+async function exchangeCode(code, clientId, v) {
+  const r = await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'authorization_code',code,redirect_uri:REDIRECT_URI,client_id:clientId,code_verifier:v})});
+  if(!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+async function sf(url, opts={}) {
+  const r = await fetch(url,{...opts,headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json',...(opts.headers||{})}});
+  if(!r.ok) throw new Error(await r.text());
+  if(r.status===204) return {};
+  return r.json();
+}
+
+// --- UI helpers ---
 function setStep(n) { for(let i=1;i<=4;i++) document.getElementById('s'+i).className='step-dot'+(i<n?' done':i===n?' active':''); }
 function showSection(id) { document.querySelectorAll('.section').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 function setMode(m) {
@@ -221,79 +316,35 @@ function setMode(m) {
   document.getElementById('mode-tracks').className='mode-btn'+(m==='tracks'?' selected':'');
   document.getElementById('mode-hours').className='mode-btn'+(m==='hours'?' selected':'');
 }
-function extractPlaylistId(s) { const m=s.match(/playlist[\/:]([A-Za-z0-9]+)/); return m?m[1]:s.trim(); }
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function fmtDur(ms) { const s=Math.floor(ms/1000),m=Math.floor(s/60); return m+':'+String(s%60).padStart(2,'0'); }
 function trackKey(title, artist) { return (title+'|||'+artist).toLowerCase(); }
 function shuffle(arr) { for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
 
-// --- Auth ---
-async function startAuth() {
-  const clientId=document.getElementById('client-id').value.trim();
-  const playlistUrl=document.getElementById('playlist-url').value.trim();
-  if(!clientId) return alert('Please enter your Spotify client ID.');
-  if(!playlistUrl) return alert('Please enter a playlist URL.');
-  const v=makeVerifier();
-  sessionStorage.setItem('pkce_v', v);
-  sessionStorage.setItem('spe', JSON.stringify({clientId, playlistUrl}));
-  const p=new URLSearchParams({client_id:clientId, response_type:'code', redirect_uri:REDIRECT_URI, scope:'playlist-read-private playlist-read-collaborative playlist-modify-public playlist-modify-private', code_challenge_method:'S256', code_challenge:await codeChallenge(v), show_dialog:'true'});
-  window.location.href='https://accounts.spotify.com/authorize?'+p;
+function showPlaylist() {
+  setStep(2); showSection('sec-target');
+  document.getElementById('pl-name').textContent = playlistName;
+  document.getElementById('pl-count').textContent = playlistTracks.length + ' tracks';
+  const totalMs = playlistTracks.reduce((a,t)=>a+(t.durationMs||0),0);
+  const totalMin = Math.round(totalMs/60000);
+  const uniqueArtists = new Set(playlistTracks.map(t=>t.artist)).size;
+  document.getElementById('pl-metrics').innerHTML=`
+    <div class="metric"><div class="metric-val">${playlistTracks.length}</div><div class="metric-label">tracks</div></div>
+    <div class="metric"><div class="metric-val">${uniqueArtists}</div><div class="metric-label">artists</div></div>
+    <div class="metric"><div class="metric-val">${totalMin>=60?Math.floor(totalMin/60)+'h '+(totalMin%60)+'m':totalMin>0?totalMin+'m':'—'}</div><div class="metric-label">duration</div></div>`;
+  document.getElementById('new-pl-name').value = playlistName + ' — expanded';
 }
 
-async function exchangeCode(code, clientId, v) {
-  const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'authorization_code',code,redirect_uri:REDIRECT_URI,client_id:clientId,code_verifier:v})});
-  if(!r.ok) throw new Error(await r.text());
-  return r.json();
-}
-
-async function sf(url, opts={}) {
-  const r=await fetch(url,{...opts,headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json',...(opts.headers||{})}});
-  if(!r.ok) throw new Error(await r.text());
-  if(r.status===204) return {};
-  return r.json();
-}
-
-// --- Load playlist ---
-async function loadPlaylist() {
-  const stored=sessionStorage.getItem('spe'); if(!stored) return;
-  const state=JSON.parse(stored);
-  document.getElementById('client-id').value=state.clientId||'';
-  document.getElementById('playlist-url').value=state.playlistUrl||'';
-  const plId=extractPlaylistId(state.playlistUrl||''); if(!plId) return;
-  showSection('sec-target'); setStep(2);
-  document.getElementById('pl-name').textContent='Loading...';
-  try {
-    playlistData=await sf('https://api.spotify.com/v1/playlists/'+plId+'?fields=name,owner.display_name,images,tracks.total');
-    let tracks=[], next='https://api.spotify.com/v1/playlists/'+plId+'/tracks?limit=100&fields=next,items(track(id,name,artists,album.images,duration_ms))';
-    while(next){const page=await sf(next);tracks=tracks.concat(page.items.filter(i=>i.track&&i.track.id).map(i=>i.track));next=page.next;}
-    playlistData.allTracks=shuffle(tracks);
-    tracks.forEach(t=>allSeenKeys.add(trackKey(t.name, t.artists[0]?.name||'')));
-    document.getElementById('pl-img').src=playlistData.images?.[0]?.url||'';
-    document.getElementById('pl-name').textContent=playlistData.name;
-    document.getElementById('pl-owner').textContent='by '+playlistData.owner.display_name;
-    document.getElementById('pl-count').textContent=tracks.length+' tracks';
-    const totalMin=Math.round(tracks.reduce((a,t)=>a+(t.duration_ms||0),0)/60000);
-    const uniqueArtists=new Set(tracks.flatMap(t=>t.artists.map(a=>a.name))).size;
-    document.getElementById('pl-metrics').innerHTML=`
-      <div class="metric"><div class="metric-val">${tracks.length}</div><div class="metric-label">tracks</div></div>
-      <div class="metric"><div class="metric-val">${uniqueArtists}</div><div class="metric-label">artists</div></div>
-      <div class="metric"><div class="metric-val">${totalMin>=60?Math.floor(totalMin/60)+'h '+(totalMin%60)+'m':totalMin+'m'}</div><div class="metric-label">duration</div></div>`;
-    document.getElementById('new-pl-name').value=playlistData.name+' — expanded';
-  } catch(e) { alert('Error loading playlist: '+e.message); showSection('sec-setup'); setStep(1); }
-}
-
-// --- Last.fm similar tracks ---
+// --- Last.fm ---
 async function getLastFmSimilar(track, artist, limit=10) {
   const url=`https://ws.audioscrobbler.com/2.0/?method=track.getSimilar&track=${encodeURIComponent(track)}&artist=${encodeURIComponent(artist)}&limit=${limit}&autocorrect=1&api_key=${LASTFM_KEY}&format=json`;
-  try {
-    const r=await fetch(url);
-    const d=await r.json();
-    return d.similartracks?.track||[];
-  } catch(e) { return []; }
+  try { const r=await fetch(url); const d=await r.json(); return d.similartracks?.track||[]; }
+  catch(e){ return []; }
 }
 
-// --- Search Spotify for a track ---
+// --- Spotify Search ---
 async function searchSpotify(title, artist) {
+  if (!hasSpotifyAuth) return null;
   try {
     const q=encodeURIComponent(`track:${title} artist:${artist}`);
     const r=await sf(`https://api.spotify.com/v1/search?q=${q}&type=track&limit=1`);
@@ -310,53 +361,54 @@ async function searchSpotify(title, artist) {
 async function generateSuggestions() { setStep(3); showSection('sec-review'); seedCursor=0; await fetchMoreSuggestions(); }
 
 async function fetchMoreSuggestions() {
-  const msgEl = document.getElementById('suggestion-list');
-  msgEl.innerHTML='<div class="loading-row"><span class="spinner"></span> querying Last.fm for similar tracks...</div>';
+  const listEl = document.getElementById('suggestion-list');
+  listEl.innerHTML='<div class="loading-row"><span class="spinner"></span> querying Last.fm for similar tracks...</div>';
 
   let targetCount = parseInt(document.getElementById('track-count').value);
   if(targetMode==='hours') {
     const hrs=parseFloat(document.getElementById('hour-count').value);
-    const avgDurMs=playlistData.allTracks.reduce((a,t)=>a+(t.duration_ms||200000),0)/playlistData.allTracks.length;
+    const avgDurMs = playlistTracks.reduce((a,t)=>a+(t.durationMs||200000),0)/playlistTracks.length;
     targetCount=Math.ceil((hrs*3600000)/avgDurMs);
   }
   targetCount=Math.min(targetCount, 50);
 
   try {
-    // Pick seed tracks — prefer kept tracks, fall back to playlist rotation
-    const seedTracks = keptTracks.length > 0
-      ? keptTracks.slice(-5)
-      : playlistData.allTracks.slice(seedCursor, seedCursor+5);
-    seedCursor = (seedCursor + 5) % playlistData.allTracks.length;
+    // Pick seeds: prefer kept tracks, else rotate through playlist
+    let seedTracks;
+    if (keptTracks.length > 0) {
+      seedTracks = keptTracks.slice(-5).map(t=>({name:t.name||t.title, artist:t.artists?.[0]?.name||t.artist}));
+    } else {
+      seedTracks = playlistTracks.slice(seedCursor, seedCursor+5);
+      seedCursor = (seedCursor + 5) % playlistTracks.length;
+    }
 
-    // Query Last.fm for each seed
-    const similarPool = new Map(); // key -> {title, artist, match}
+    const similarPool = new Map();
     const perSeed = Math.ceil(targetCount / seedTracks.length) + 5;
-
     for(const seed of seedTracks) {
-      const artist = seed.artists?.[0]?.name || seed.artist || '';
-      const similar = await getLastFmSimilar(seed.name, artist, perSeed);
+      const similar = await getLastFmSimilar(seed.name, seed.artist, perSeed);
       for(const s of similar) {
-        const k=trackKey(s.name, s.artist.name);
+        const k = trackKey(s.name, s.artist.name);
         if(!allSeenKeys.has(k) && !removedKeys.has(k) && !similarPool.has(k)) {
-          similarPool.set(k, {title: s.name, artist: s.artist.name, match: parseFloat(s.match||0)});
+          similarPool.set(k, {title:s.name, artist:s.artist.name, match:parseFloat(s.match||0)});
         }
       }
     }
 
-    // Sort by match score, take top N
-    const sorted=[...similarPool.values()].sort((a,b)=>b.match-a.match).slice(0, targetCount);
+    const sorted=[...similarPool.values()].sort((a,b)=>b.match-a.match).slice(0,targetCount);
 
-    // Look up each on Spotify
-    msgEl.innerHTML='<div class="loading-row"><span class="spinner"></span> finding tracks on Spotify...</div>';
+    if(hasSpotifyAuth) {
+      listEl.innerHTML='<div class="loading-row"><span class="spinner"></span> finding tracks on Spotify...</div>';
+    }
+
     const resolved=[];
     for(const s of sorted) {
-      const spotifyTrack=await searchSpotify(s.title, s.artist);
-      resolved.push({lastfm: s, spotifyTrack});
+      const spotifyTrack = await searchSpotify(s.title, s.artist);
+      resolved.push({lastfm:s, spotifyTrack});
     }
     suggestions=resolved;
     renderSuggestions();
   } catch(e) {
-    msgEl.innerHTML='<p style="color:var(--red);font-size:12px;">Error: '+esc(e.message)+'</p>';
+    listEl.innerHTML='<p style="color:var(--red);font-size:12px;">Error: '+esc(e.message)+'</p>';
   }
 }
 
@@ -365,13 +417,12 @@ function renderSuggestions() {
   if(!suggestions.length){list.innerHTML='<p style="color:var(--text-muted);font-size:12px;padding:12px 0;">No suggestions found. Try "more suggestions".</p>';return;}
   list.innerHTML=suggestions.map((s,i)=>{
     const t=s.spotifyTrack;
-    const rowId='row_'+i;
     const img=t?.album?.images?.[2]?.url||'';
     const name=t?t.name:s.lastfm.title;
     const artist=t?t.artists.map(a=>a.name).join(', '):s.lastfm.artist;
     const dur=t?fmtDur(t.duration_ms||0):'';
-    const notFound=!t?'<span class="not-found-label">not on Spotify</span>':'';
-    return `<div class="track-row" id="${rowId}">
+    const notFound=(!t&&hasSpotifyAuth)?'<span class="not-found-label">not on Spotify</span>':'';
+    return `<div class="track-row" id="row_${i}">
       <img class="track-thumb" src="${esc(img)}" alt=""/>
       <div class="track-info">
         <div class="track-name">${esc(name)}${notFound}</div>
@@ -379,7 +430,7 @@ function renderSuggestions() {
       </div>
       <span class="track-dur">${dur}</span>
       <div class="track-actions">
-        ${t?`<button class="icon-btn keep" onclick="keepTrack(${i})" title="Keep">&#10003;</button>`:''}
+        <button class="icon-btn keep" onclick="keepTrack(${i})" title="Keep">&#10003;</button>
         <button class="icon-btn remove" onclick="removeTrack(${i})" title="Remove">&#10005;</button>
       </div>
     </div>`;
@@ -388,22 +439,19 @@ function renderSuggestions() {
 }
 
 function keepTrack(idx) {
-  const s=suggestions[idx]; if(!s||!s.spotifyTrack) return;
-  keptTracks.push(s.spotifyTrack);
+  const s=suggestions[idx]; if(!s) return;
+  // Store either spotify track or lastfm info
+  const track = s.spotifyTrack || {name:s.lastfm.title, artist:s.lastfm.artist, id:null, artists:[{name:s.lastfm.artist}], duration_ms:0, album:{images:[]}};
+  keptTracks.push(track);
   allSeenKeys.add(trackKey(s.lastfm.title, s.lastfm.artist));
-  document.getElementById('row_'+idx)?.remove();
   suggestions[idx]=null; suggestions=suggestions.filter(Boolean);
-  // re-index
-  renderSuggestions();
-  updateCounts(); updateKeptSeeds();
+  renderSuggestions(); updateCounts(); updateKeptSeeds();
 }
 function removeTrack(idx) {
   const s=suggestions[idx]; if(!s) return;
   removedKeys.add(trackKey(s.lastfm.title, s.lastfm.artist));
-  document.getElementById('row_'+idx)?.remove();
   suggestions[idx]=null; suggestions=suggestions.filter(Boolean);
-  renderSuggestions();
-  updateCounts();
+  renderSuggestions(); updateCounts();
 }
 function updateCounts() {
   document.getElementById('kept-count').textContent=keptTracks.length;
@@ -411,7 +459,7 @@ function updateCounts() {
 }
 function updateKeptSeeds() {
   const el=document.getElementById('kept-seeds'); if(!keptTracks.length){el.innerHTML='';return;}
-  el.innerHTML=keptTracks.slice(-10).map(t=>`<span class="seed-tag">${esc(t.name.length>20?t.name.slice(0,20)+'…':t.name)}</span>`).join('');
+  el.innerHTML=keptTracks.slice(-10).map(t=>`<span class="seed-tag">${esc((t.name||'').length>20?(t.name||'').slice(0,20)+'…':(t.name||''))}</span>`).join('');
 }
 
 function goToExport() {
@@ -419,47 +467,57 @@ function goToExport() {
   setStep(4); showSection('sec-export');
   document.getElementById('exp-count').textContent=keptTracks.length;
   const totalMin=Math.round(keptTracks.reduce((a,t)=>a+(t.duration_ms||0),0)/60000);
-  document.getElementById('exp-dur').textContent=totalMin>=60?Math.floor(totalMin/60)+'h '+(totalMin%60)+'m':totalMin+'m';
-  document.getElementById('exp-artists').textContent=new Set(keptTracks.flatMap(t=>t.artists.map(a=>a.name))).size;
+  document.getElementById('exp-dur').textContent=totalMin>0?(totalMin>=60?Math.floor(totalMin/60)+'h '+(totalMin%60)+'m':totalMin+'m'):'—';
+  document.getElementById('exp-artists').textContent=new Set(keptTracks.map(t=>t.artists?.[0]?.name||t.artist||'')).size;
   document.getElementById('export-list').innerHTML=keptTracks.map(t=>`
     <div class="track-row">
       <img class="track-thumb" src="${esc(t.album?.images?.[2]?.url||'')}" alt=""/>
       <div class="track-info">
-        <div class="track-name">${esc(t.name)}</div>
-        <div class="track-artist">${esc(t.artists.map(a=>a.name).join(', '))}</div>
+        <div class="track-name">${esc(t.name||'')}</div>
+        <div class="track-artist">${esc(t.artists?t.artists.map(a=>a.name).join(', '):(t.artist||''))}</div>
       </div>
-      <span class="track-dur">${fmtDur(t.duration_ms||0)}</span>
+      <span class="track-dur">${t.duration_ms?fmtDur(t.duration_ms):''}</span>
     </div>`).join('');
+
+  if(!hasSpotifyAuth) {
+    document.getElementById('save-section').innerHTML=`<p style="font-size:11px;color:var(--text-muted);">To save to Spotify, reload the page and connect with your Spotify client ID.</p>`;
+    document.getElementById('export-sub').textContent='All tracks you kept. Connect Spotify to save them.';
+  }
 }
 
 async function saveToSpotify() {
+  if(!hasSpotifyAuth) return alert('Not connected to Spotify.');
+  const saveable = keptTracks.filter(t=>t.id);
+  if(!saveable.length) return alert('None of the kept tracks could be matched on Spotify.');
   const name=document.getElementById('new-pl-name').value.trim()||'Expanded playlist';
   const st=document.getElementById('save-status');
   st.style.display='block'; st.style.color='var(--green)'; st.textContent='Saving...';
   try {
     const me=await sf('https://api.spotify.com/v1/me');
     const pl=await sf('https://api.spotify.com/v1/users/'+me.id+'/playlists',{method:'POST',body:JSON.stringify({name,public:false,description:'Created with Spotify Playlist Expander + Last.fm'})});
-    const uris=keptTracks.map(t=>'spotify:track:'+t.id);
+    const uris=saveable.map(t=>'spotify:track:'+t.id);
     for(let i=0;i<uris.length;i+=100) await sf('https://api.spotify.com/v1/playlists/'+pl.id+'/tracks',{method:'POST',body:JSON.stringify({uris:uris.slice(i,i+100)})});
-    st.textContent='✓ Saved "'+name+'" to your Spotify library.';
+    st.textContent=`✓ Saved "${name}" (${saveable.length} tracks) to your Spotify library.`;
   } catch(e) { st.style.color='var(--red)'; st.textContent='Error: '+e.message; }
 }
 
-// --- Handle redirect ---
+// --- Handle Spotify redirect ---
 (async()=>{
   const p=new URLSearchParams(window.location.search);
   const code=p.get('code'); if(!code) return;
   window.history.replaceState({},'',window.location.pathname);
   const v=sessionStorage.getItem('pkce_v');
   const stored=sessionStorage.getItem('spe');
-  if(!v||!stored){alert('Auth state lost. Please try again.');return;}
-  const{clientId}=JSON.parse(stored);
+  if(!v||!stored) return;
+  const{clientId, playlistName:pn, tracks}=JSON.parse(stored);
+  if(tracks) { playlistTracks=tracks; playlistName=pn||'My Playlist'; tracks.forEach(t=>allSeenKeys.add(trackKey(t.name,t.artist))); }
   try {
     const tok=await exchangeCode(code,clientId,v);
     accessToken=tok.access_token;
+    hasSpotifyAuth=true;
     sessionStorage.removeItem('pkce_v');
-    await loadPlaylist();
-  } catch(e){alert('Token exchange failed: '+e.message);}
+    showPlaylist();
+  } catch(e){ alert('Spotify auth failed: '+e.message); }
 })();
 </script>
 </body>
