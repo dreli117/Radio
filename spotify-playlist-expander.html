@@ -215,22 +215,22 @@ let hasSpotifyAuth = false;
 
 // --- CSV parsing ---
 function parseCSV(text) {
-  const lines = text.split('\n');
-  if (!lines.length) return [];
-  // Find header row
-  const header = lines[0].split(',').map(h => h.replace(/^"|"$/g,'').trim().toLowerCase());
-  const nameIdx = header.findIndex(h => h === 'track name' || h.includes('track name'));
-  const artistIdx = header.findIndex(h => h === 'artist name(s)' || h.includes('artist name') || h === 'artist');
-  const durIdx = header.findIndex(h => h === 'duration (ms)' || h.includes('duration'));
-  if (nameIdx === -1 || artistIdx === -1) return null;
-
+  text = text.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const lines = text.split("\n").filter(l => l.trim().length > 0);
+  if (lines.length < 2) return [];
+  const headerRow = parseCSVRow(lines[0]);
+  const header = headerRow.map(h => h.replace(/^"|"$/g,"").trim().toLowerCase());
+  const nameIdx = header.findIndex(h => h === "track name");
+  const artistIdx = header.findIndex(h => h === "artist name(s)" || h === "artist names" || h.startsWith("artist name"));
+  const durIdx = header.findIndex(h => h.includes("duration"));
+  if (nameIdx === -1 || artistIdx === -1) { console.error("Headers:", header); return null; }
   const tracks = [];
   for (let i = 1; i < lines.length; i++) {
     const row = parseCSVRow(lines[i]);
     if (!row || row.length <= Math.max(nameIdx, artistIdx)) continue;
-    const name = row[nameIdx]?.replace(/^"|"$/g,'').trim();
-    const artist = (row[artistIdx]?.replace(/^"|"$/g,'').trim()||'').split(',')[0].trim();
-    const durMs = durIdx >= 0 ? parseInt(row[durIdx]) || 0 : 0;
+    const name = row[nameIdx]?.replace(/^"|"$/g,"").trim();
+    const artist = (row[artistIdx]?.replace(/^"|"$/g,"").trim()||"").split(",")[0].trim();
+    const durMs = durIdx >= 0 ? parseInt(row[durIdx]?.replace(/^"|"$/g,"")) || 0 : 0;
     if (name && artist) tracks.push({name, artist, durationMs: durMs});
   }
   return tracks;
